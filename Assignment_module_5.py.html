@@ -1,0 +1,463 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Assignment To Module 5
+# ## Download the data from [here](https://drive.google.com/file/d/1rsv5O4L7t8eBaZ_dvkIhXztsHbNWpr28/view?usp=share_link).
+# 
+# >**This assignment tests your knowledge of Pandas** and **Statistics**.
+# 
+
+# ### Helpful Resources:
+# 
+# 1. [NumPy Tutorial (YouTube)](https://www.youtube.com/watch?v=GB9ByFAIAH4&t=8s) 
+# 2. [Pandas Series (YouTube)](https://www.youtube.com/watch?v=ZyhVh-qRZPA&list=PLSLQ7uyfNIItZf404-TviaeM01pnebr5K): You can watch the relevant videos in this playlist (particularly the `groupby` video).
+# 4. [NumPy, Pandas, Matplotlib Crash Course (YouTube)](https://www.youtube.com/watch?v=r-uOLxNrNk8&t=8263s)
+# 
+# ### NOTE:
+# 
+# >Remember to grant access to your solution by making changing `general access` to `anyone with the link`.
+
+# **Margaret Adeola Ayoola**
+
+# <hr><br>
+# 
+# # Note: 
+# 
+# >1. The score for each question is **`10%`**
+# >2. The score for submissions before ***`Tuesday` (22/11/2022)*** is **`10%`**
+# >**Total:** (9 x 10) + 10 = **100%**
+# 
+# ### Please remember to use `.head()` to display a portion of your data to avoid cluttering the notebook.
+
+# ### Import Necessary Libraries
+
+# In[2]:
+
+
+# Import 3rd party libraries
+import numpy as np
+import pandas as pd
+# pandas settings
+pd.set_option('display.max_rows', 1000)
+pd.set_option('display.max_columns', 1000)
+pd.set_option('display.max_colwidth', 1000)
+# Import builtin modules
+import typing as tp
+# Black code formatter (Optional. You can comment this!)
+# pip install nb_black   # To install
+#%load_ext lab_black
+
+
+# In[ ]:
+
+
+#Import neccessary libaries.
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+get_ipython().run_line_magic('matplotlib', 'inline')
+import warnings
+warnings.filterwarnings('ignore')
+
+
+# <br>
+# 
+# ### Load Data
+# 
+# * You can download the data from [here](https://drive.google.com/file/d/1rsv5O4L7t8eBaZ_dvkIhXztsHbNWpr28/view?usp=share_link).
+# 
+# Source: [Kaggle](https://www.kaggle.com/datasets/mylesoneill/world-university-rankings)
+
+# In[3]:
+
+
+# Load your data here and display the first 5 rows of your data
+# ENTER YOUR CODE HERE!
+import numpy as np
+import pandas as pd
+# load data
+filepath = "/storage/emulated/0/Download/uni_data.csv"
+df = pd.read_csv(filepath)
+schema_df = pd.read_csv("/storage/emulated/0/Download/uni_data.csv")
+# data size
+#print(df.shape)
+# first five rows
+df.head()
+
+
+# <br>
+# 
+# #### The data should look like this:
+# 
+# ![data](https://i.postimg.cc/8zL90cc2/result.png)
+
+# <br>
+# 
+# ### Question 1:
+# a. What is the **shape** of the data? i.e how many rows and columns does the data have?  **(Marks: 5%)**
+# 
+# b. Display the **information** about the data. Hint: use the `info()` method.  **(Marks: 5%)**
+# 
+
+# In[4]:
+
+
+# Qs 1a. The shape of the data
+# ENTER YOUR CODE HERE!
+# Qs 1a. The shape of the data
+# ENTER YOUR CODE HERE!
+# data size
+print(df.shape)
+# first five rows
+df.head()
+
+
+# In[5]:
+
+
+# Qs 1b. The info about the data
+# ENTER YOUR CODE HERE!
+# Qs 1a. The shape of the data
+# data size
+print(df.info)
+# first five rows
+df.head()
+
+
+# <br>
+# 
+# ### Question 2:
+# a. How many columns in the data have **missing values** (`NaNs`) in them?  **(Marks: 5%)**
+# 
+# b. What is the **percentage** of missing values in the columns with missing data?  **(Marks: 5%)**
+# 
+
+# In[6]:
+
+
+# 2a. Columns with missing values
+# ENTER YOUR CODE HERE!
+sum(pd.isnull(df['broad_impact']))
+
+
+# In[9]:
+
+
+# Qs 2b. Percentage of missing data
+sum(pd.isnull(df['broad_impact'])) * 100 / len(df)
+
+
+# <br>
+# 
+# ### Question 3:
+# a. How many **unique institutions** are in the data?  **(Marks: 3%)**
+# 
+# b. What type of categorical data is the variable/column `quality_of_education`?. i.e is it **ordinal** or **nominal**?  **(Marks: 4%)**
+# 
+# c. Create a new column ***`is_institution`*** that displays ***`True`*** if the institution is an `institute` otherwise ***`False`***. \
+# Hint: use `.str()` and `.contains()`.  **(Marks: 3%)**
+# 
+
+# In[10]:
+
+
+# 3a. Number of unique value
+# ENTER YOUR CODE HERE!
+df['institution'].nunique()
+
+
+# In[11]:
+
+
+### 3b. Type of categorical data:
+### Answer:
+df['quality_of_education'].dtype
+
+
+# ### 3b. Type of categorical data:
+# ### Answer:
+# 
+# <hr> dtype('int64')
+
+# In[12]:
+
+
+# Qs 3c. Create a new column is_institution that displays True if the institution is an institute otherwise False
+# ENTER YOUR CODE HERE!
+df['is_institution'] = np.where((df["institution"] == "institute"), True, False)
+df.head()
+
+
+# In[ ]:
+
+
+
+
+
+# <br>
+# 
+# ### Question 4:
+# a. What is the **maximum** number of times an institution occurs in the data? Hint: Use a `.groupby()`  **(Marks: 5%)**
+# 
+# b. Add a new column called ***`influence_tier`*** to the data that shows the influence as a string using the dictionary below. \
+# i.e if the ***`influence`*** is ***`less than 57`***, the institution is a `tier_1` institution, if the ***`influence`*** is ***`between 57 and 121 (inclusive)`***, the institution is a `tier_2` institution, etc.
+# 
+# ```Python
+# 
+# influence_dict = {
+#             '<57': 'tier_1',
+#             '57_to_121': 'tier_2',
+#             '122_to_231': 'tier_3',
+#             '232_to_341': 'tier_4',
+#             '342_to_451': 'tier_5',
+#             '452_to_561': 'tier_6',
+#             '562_to_670': 'tier_7',
+#             '671_to_780': 'tier_8',
+#             '781_to_890': 'tier_9',
+#             '>890': 'tier_10'
+# }
+# ```
+# 
+# #### Hint:
+# 
+# ```Python
+# # Create a helper function
+# def obtain_influence_tier(influence: int) -> str:
+#     """This helper function returns the influence tier as a string."""
+#     if influence < 57:
+#         tier = "tier_1"
+#     elif 57 <= influence <= 121:
+#         tier = "tier_2"
+#         ...
+#     return tier
+# 
+# 
+# # Use .apply() to apply your helper function
+# data["influence"].apply(obtain_influence_tier)
+# # OR
+# data["influence"].apply(lambda x: obtain_influence_tier(x))
+# ```
+# 
+# **(Marks: 5%)**
+# <br>
+
+# In[13]:
+
+
+# Qs 4a. Maximum number of times an institution occurs in the data
+# ENTER YOUR CODE HERE!
+df[df["institution"] == df['institution'].max()]
+
+
+# In[54]:
+
+
+# Qs 4b. Add a new column called influence_tier to the data that shows the influence as a string
+# ENTER YOUR CODE HERE!
+# Create a helper function
+def obtain_influence_tier(influence: int) -> str:
+    """This helper function returns the influence tier as a string."""
+    if influence < 57:
+        tier = "tier_1"
+    elif 57 <= influence <= 121:
+        tier = "tier_2"
+        ...
+    return tier
+
+
+# ### The resulting dataframe should look like the one below:
+# 
+# ![result](https://i.postimg.cc/vmDhW44t/result.png)
+
+# In[ ]:
+
+
+
+
+
+# <br>
+# 
+# 
+# ### Question 5:
+# a. Sort the data by ***`national_rank`*** and ***`world_rank`*** in ascending order. Display the 1st 10 records. **(Marks: 5%)**
+# 
+# b. What is the **average** , **median**, and **standard deviation** of the column/variable **quality_of_faculty**?  **(Marks: 5%)**
+
+# In[22]:
+
+
+# 5a. Sort the data by national_rank and world_rank in ascending order
+# ENTER YOUR CODE HERE!
+df.sort_values(by=['national_rank', 'world_rank'], ascending=[False, True])
+df.sort_index()
+df.head(10)
+
+
+# In[ ]:
+
+
+# 5b. Average, median and standard deviation
+# ENTER YOUR CODE HERE!
+
+
+# In[23]:
+
+
+df['quality_of_faculty'].mean()
+
+
+# In[24]:
+
+
+df['quality_of_faculty'].mode()
+
+
+# In[25]:
+
+
+df['quality_of_faculty'].median()
+
+
+# In[26]:
+
+
+df['quality_of_faculty'].std()
+
+
+# <br>
+# 
+# ### Question 6:
+# a. Replace the missing values in the column/variable **broad_impact** with the value `NULL`   **(Marks: 5%)**
+# 
+# b. How many times does the institution **`University Lille 1: Sciences and Technologies`** appear in the data?  **(Marks: 5%)**
+
+# In[31]:
+
+
+# Qs 6a. Replace the NaNs with 5
+# ENTER YOUR CODE HERE!
+df.fillna('NULL').head()
+
+
+# In[32]:
+
+
+# Qs 6b. How many times does the institution University Lille 1: Sciences and Technologies appear in the data?
+# ENTER YOUR CODE HERE!
+institution = df.groupby(['institution'])
+
+
+# In[33]:
+
+
+institution.get_group('University Lille 1: Sciences and Technologies')
+
+
+# <br>
+# 
+# ### Question 7:
+# a. List all the institutions with **`citations`** having a rank between 1 and 10 (inclusive).  **(Marks: 5%)**
+# 
+# b. What is the range of the column/variable **`alumni_employment`**?  **(Marks: 5%)**
+
+# In[59]:
+
+
+# Qs 7a.  List all the institutions with citations having a rank between 1 and 10 (inclusive)
+# ENTER YOUR CODE HERE!
+df['citations'] <= 10 
+
+
+# In[73]:
+
+
+df.sort_values(by=['citations'])
+df.sort_index()
+df.head(10)
+
+
+# In[34]:
+
+
+# Qs 7c. Range of the column/variable alumni_employment
+# ENTER YOUR CODE HERE!
+df['alumni_employment'].describe()
+
+
+# In[35]:
+
+
+print('range is', df.alumni_employment.max() - df.alumni_employment.min())
+
+
+# <br>
+# 
+# ### Question 8:
+# a. What was the lowest ranked institution in **`USA`** in the year **`2014`**?  **(Marks: 5%)**
+# 
+# b. List the countries that have **`catholic`** in their `institution` name?  **(Marks: 5%)**
+
+# In[ ]:
+
+
+
+
+
+# <br>
+# 
+# ### Question 9:
+# a. Create a new dataframe that has the following columns/variables:
+# * world_rank
+# * institution
+# * quality_of_faculty
+# * publications
+# 
+# **(Marks: 4%)**
+# 
+# Display the ***first 5 records*** of the newly created dataframe.  
+# 
+# b. Rename the column ***`publications`*** to ***`publications_rank`***.  **(Marks: 3%)**
+#  
+# c. Set the **`world_rank`** as the `index` of the newly created dataframe.   **(Marks: 3%)**
+# 
+
+# In[77]:
+
+
+# Qs 9a.  Create a new dataframe
+# ENTER YOUR CODE HERE!
+import pandas as pd
+df2 = pd.DataFrame(
+    {
+        'index':[0,1,2,3,4],
+        'world_rank':[1,2,3,4,5],
+        'institution':['Harvard university', 'Massachusetts Institute of Technology', 'California Institute of Technology', 'Stanford University', 'Princeton University'],
+        'quality_of_education':[5,17,2,1,8],
+        'publications':[4,37,12,1,53]
+    }
+)
+
+
+# In[78]:
+
+
+# Qs 9b.  Rename the column 'publications' to 'publications_rank'.
+# ENTER YOUR CODE HERE!
+df2.rename(columns = {'publications':'publications_rank'}).head()
+
+
+# In[79]:
+
+
+# Qs 9c.  Set the world_rank as the index.
+# ENTER YOUR CODE HERE!
+df2.set_index("world_rank")
+
+
+# In[ ]:
+
+
+
+
